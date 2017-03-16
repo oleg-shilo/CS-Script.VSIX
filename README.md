@@ -1,0 +1,1 @@
+# CS-Script.VSIX
