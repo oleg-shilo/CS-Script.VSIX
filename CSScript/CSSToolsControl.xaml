@@ -1,0 +1,551 @@
+﻿<UserControl x:Class="OlegShilo.CSScript.MyControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:OlegShilo.CSScript"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Name="MyToolWindow"
+             AllowDrop="True"
+             Background="#FFFDFDFD"
+             DragEnter="On_DragEnter"
+             Drop="On_Drop"
+             d:DesignHeight="300"
+             d:DesignWidth="500"
+             mc:Ignorable="d">
+
+    <!--  Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"  -->
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="viewModel" ObjectType="{x:Type local:CSScriptViewModel}" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <ContextMenu x:Key="ContextMnu"
+                     AllowDrop="True"
+                     Background="AliceBlue"
+                     Cursor="Hand"
+                     IsEnabled="True">
+            <ContextMenu.Items>
+                <MenuItem Click="OpenScriptMenuItem_Click" Header="Open Script" />
+                <MenuItem Click="OpenScriptFolderMenuItem_Click" Header="Open Containing Folder" />
+                <MenuItem Click="RemoveMenuItem_Click" Header="Remove From List" />
+            </ContextMenu.Items>
+        </ContextMenu>
+
+        <Style x:Key="LinkTextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground">
+                        <Setter.Value>
+                            <SolidColorBrush Color="#FFCB100A" />
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="TextDecorations" Value="Underline" />
+                    <Setter Property="Opacity" Value="0.75" />
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="#FF060C96" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+        <Style x:Key="LinkTextBlockStyle1" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground">
+                        <Setter.Value>
+                            <SolidColorBrush Color="#FFCB100A" />
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="TextDecorations" Value="Underline" />
+                    <Setter Property="Opacity" Value="0.75" />
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="#FF1C53DC" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                        <GradientStop Offset="0" Color="White" />
+                        <GradientStop Offset="1" Color="#FFFBC652" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="LinkTextBlockStyle2" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground">
+                        <Setter.Value>
+                            <SolidColorBrush Color="#FFCB100A" />
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="TextDecorations" Value="Underline" />
+                    <Setter Property="Opacity" Value="0.75" />
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="#FF1C53DC" />
+            <Setter Property="TextDecorations" Value="Underline" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+        <Style x:Key="ListBoxItemStyle1" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Grid x:Name="grid"
+                              MinWidth="150"
+                              MinHeight="20"
+                              ContextMenu="{StaticResource ContextMnu}"
+                              Cursor="Hand"
+                              MouseLeftButtonDown="HistoryItem_MouseDown"
+                              ToolTip="{Binding Tooltip}"
+                              ToolTipService.InitialShowDelay="3000">
+                            <Rectangle x:Name="dummyBkg"
+                                       Fill="White"
+                                       Opacity="0.0001" />
+                            <Rectangle x:Name="rectangle"
+                                       Margin="0"
+                                       RadiusX="4"
+                                       RadiusY="4"
+                                       Stroke="#FFEFB024"
+                                       Visibility="Collapsed">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Offset="1" Color="#FFFDDE99" />
+                                        <GradientStop Color="White" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <StackPanel x:Name="stackPanel"
+                                        Margin="0,0,15,0"
+                                        Orientation="Horizontal">
+                                <Grid Width="24"
+                                      Height="24"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                                    <Grid x:Name="NotPinnedGroup"
+                                          Width="Auto"
+                                          Visibility="{Binding NotPinned,
+                                                               Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Rectangle x:Name="NotPinnedBkg"
+                                                   Width="16"
+                                                   Margin="3"
+                                                   Fill="White"
+                                                   Stroke="#FFEFB024"
+                                                   Visibility="Collapsed" />
+                                        <Image x:Name="NotPinnedImage"
+                                               MouseLeftButtonDown="NotPinnedGroup_MouseLeftButtonDown"
+                                               SnapsToDevicePixels="true"
+                                               Source="not_pinned.png"
+                                               Stretch="None"
+                                               ToolTip="Pin this item to the Recent Scripts list."
+                                               Visibility="Collapsed" />
+                                    </Grid>
+                                    <Grid x:Name="PinnedGroup"
+                                          Width="Auto"
+                                          Visibility="{Binding Pinned,
+                                                               Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Rectangle x:Name="PinnedBkg"
+                                                   Margin="3"
+                                                   Fill="White"
+                                                   Stroke="#FFEFB024"
+                                                   Visibility="Collapsed" />
+                                        <Image x:Name="PinnedImage"
+                                               MouseLeftButtonDown="PinnedGroup_MouseLeftButtonDown"
+                                               SnapsToDevicePixels="true"
+                                               Source="pinned.png"
+                                               Stretch="None"
+                                               ToolTip="Unpin this item from the Recent Scripts list." />
+                                    </Grid>
+                                </Grid>
+                                <Image MinWidth="16"
+                                       SnapsToDevicePixels="true"
+                                       Source="{Binding ShellIcon}" />
+                                <TextBlock x:Name="textBlock"
+                                           Margin="5,5,0,5"
+                                           HorizontalAlignment="Left"
+                                           Foreground="#FF1C53DC"
+                                           Text="{Binding Name}" />
+                            </StackPanel>
+                            <Image Width="10"
+                                   Margin="0,0,5,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Source="Resources/busy.png"
+                                   Stretch="UniformToFill"
+                                   Visibility="{Binding Path=Busy,
+                                                        Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+
+                            <Trigger SourceName="PinnedGroup" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PinnedBkg" Property="Visibility" Value="Visible" />
+                            </Trigger>
+
+                            <Trigger SourceName="NotPinnedGroup" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NotPinnedBkg" Property="Visibility" Value="Visible" />
+                            </Trigger>
+
+                            <Trigger SourceName="grid" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="rectangle" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="textBlock" Property="Foreground" Value="Black" />
+                                <Setter TargetName="NotPinnedImage" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="Selector.IsSelected" Value="False" />
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded" />
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="root"
+          AllowDrop="True"
+          DataContext="{StaticResource viewModel}"
+          DataContextChanged="Grid_DataContextChanged"
+          DragEnter="On_DragEnter"
+          Drop="On_Drop">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="5" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="73" />
+            <RowDefinition Height="27" />
+            <RowDefinition Height="23" />
+            <RowDefinition />
+            <RowDefinition Height="5" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="3"
+                Grid.Column="1"
+                Margin="0,2,0,0"
+                VerticalAlignment="Center"
+                AllowDrop="True"
+                BorderThickness="0,0,0,1"
+                DragEnter="On_DragEnter"
+                Drop="On_Drop"
+                Opacity="0.5">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}" />
+            </Border.BorderBrush>
+        </Border>
+        <Border Grid.Row="1"
+                Grid.Column="3"
+                Margin="0,2,0,0"
+                VerticalAlignment="Bottom"
+                AllowDrop="True"
+                BorderThickness="0,0,0,1"
+                DragEnter="On_DragEnter"
+                Drop="On_Drop"
+                Opacity="0.5">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}" />
+            </Border.BorderBrush>
+        </Border>
+        <Border Grid.Row="1"
+                Grid.RowSpan="5"
+                Grid.Column="2"
+                Margin="0"
+                HorizontalAlignment="Center"
+                AllowDrop="True"
+                BorderThickness="0,0,1,0"
+                DragEnter="On_DragEnter"
+                Drop="On_Drop"
+                Opacity="0.5">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}" />
+            </Border.BorderBrush>
+        </Border>
+        <TextBlock Grid.Row="3"
+                   Grid.Column="1"
+                   Margin="0"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Background="#FFFDFDFD"
+                   FontSize="14.667"
+                   Text="Recent Scripts "
+                   TextWrapping="Wrap">
+            <TextBlock.Foreground>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}" />
+            </TextBlock.Foreground>
+        </TextBlock>
+
+        <StackPanel x:Name="CommandsGroup"
+                    Grid.Row="1"
+                    Grid.RowSpan="2"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Orientation="Vertical"
+                    d:LayoutOverrides="Height">
+
+            <StackPanel Margin="5,0,0,0"
+                        Orientation="Horizontal"
+                        ToolTip="Create and open new script">
+                <Image SnapsToDevicePixels="true"
+                       Source="pack://application:,,,/CSScript;Component/new.png"
+                       Stretch="None" />
+                <TextBlock HorizontalAlignment="Left"
+                           FontWeight="Normal"
+                           Foreground="#FF1C53DC"
+                           MouseLeftButtonDown="Create_MouseLeftButtonDown"
+                           Style="{DynamicResource LinkTextBlockStyle}"
+                           Text="New Script..."
+                           TextWrapping="Wrap"
+                           d:LayoutOverrides="Width" />
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Orientation="Horizontal"
+                        ToolTip="Open existing script">
+                <Image SnapsToDevicePixels="true"
+                       Source="pack://application:,,,/CSScript;component/open.png"
+                       Stretch="None" />
+                <TextBlock HorizontalAlignment="Left"
+                           FontWeight="Normal"
+                           Foreground="#FF1C53DC"
+                           MouseLeftButtonDown="Open_MouseLeftButtonDown"
+                           Style="{DynamicResource LinkTextBlockStyle}"
+                           Text="Open Script..."
+                           TextWrapping="Wrap"
+                           d:LayoutOverrides="Width" />
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Orientation="Horizontal"
+                        ToolTip="Refresh references/includes of already loaded script">
+                <Image SnapsToDevicePixels="true"
+                       Source="pack://application:,,,/CSScript;component/refresh.png"
+                       Stretch="None" />
+                <TextBlock HorizontalAlignment="Left"
+                           FontWeight="Normal"
+                           Foreground="#FF1C53DC"
+                           MouseLeftButtonDown="Refresh_MouseLeftButtonDown"
+                           Style="{DynamicResource LinkTextBlockStyle}"
+                           Text="Refresh Script Project"
+                           TextWrapping="Wrap"
+                           d:LayoutOverrides="Width" />
+
+            </StackPanel>
+        </StackPanel>
+        <ListBox x:Name="History"
+                 Grid.Row="4"
+                 Grid.Column="1"
+                 Margin="0,6,0,-1"
+                 BorderBrush="{x:Null}"
+                 ItemContainerStyle="{DynamicResource ListBoxItemStyle1}"
+                 ItemsSource="{Binding Path=RecentScripts,
+                                       Source={StaticResource viewModel}}" />
+        <TextBlock x:Name="Watermark"
+                   Grid.Row="2"
+                   Grid.RowSpan="3"
+                   Grid.Column="3"
+                   Margin="0,0,10,10"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   FontSize="48"
+                   FontStyle="Italic"
+                   FontWeight="Bold"
+                   Opacity="0.5"
+                   Text="CS-Script"
+                   TextWrapping="Wrap">
+            <TextBlock.Foreground>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}" />
+            </TextBlock.Foreground>
+        </TextBlock>
+        <WrapPanel x:Name="LinksGroup"
+                   Grid.Row="2"
+                   Grid.RowSpan="3"
+                   Grid.Column="3"
+                   Margin="0,0,0,60"
+                   Orientation="Vertical">
+            <TextBlock MouseLeftButtonDown="HomeDir_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" CS-Script Home Directory "
+                       ToolTip="Open CS-Script Home Directory" />
+            <TextBlock MouseLeftButtonDown="Samples_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" CS-Script Samples Directory "
+                       ToolTip="Open CS-Script Samples Directory" />
+            <TextBlock MouseLeftButtonDown="AppData_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" CS-Script TempDir "
+                       ToolTip="Open CS-Script AppDir folder" />
+            <TextBlock MouseLeftButtonDown="MyScripts_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" MyScripts Directory "
+                       ToolTip="Open CS-Script subdirectory in MyDocuments" />
+            <TextBlock MouseLeftButtonDown="WebHomePage_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Home Page "
+                       ToolTip="Browse to CS-Script Home WEB page" />
+            <TextBlock MouseLeftButtonDown="Config_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Configuration "
+                       ToolTip="Open CS-Script Configuration Console" />
+            <TextBlock MouseLeftButtonDown="Help_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Help "
+                       ToolTip="Open CS-Script Help" />
+            <TextBlock MouseLeftButtonDown="OnlineHelp_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Online Help "
+                       ToolTip="Browse CS-Script Online Help" />
+            <TextBlock MouseLeftButtonDown="Codeproject_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" CS-Script on CodeProject "
+                       ToolTip="Browse to CS-Script article on CodeProject" />
+            <TextBlock MouseLeftButtonDown="Feedback_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Send Feedback "
+                       ToolTip="Send Feedback" />
+            <TextBlock MouseLeftButtonDown="BugReport_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Send Bug Report "
+                       ToolTip="Report a problem" />
+            <TextBlock Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Check for Updates "
+                       ToolTip="Check for Updates"
+                       Visibility="Collapsed" />
+            <TextBlock MouseLeftButtonDown="EditRecent_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Manage 'Recent Scripts'"
+                       ToolTip="Manage 'Recent Scripts' list" />
+            <TextBlock MouseLeftButtonDown="Test_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle1}"
+                       Text=" Test "
+                       ToolTip="Test"
+                       Visibility="Collapsed" />
+        </WrapPanel>
+        <Grid x:Name="InfoGroup"
+              Grid.Row="1"
+              Grid.Column="3"
+              Margin="5,5,5,5"
+              d:LayoutOverrides="Height">
+            <Grid.RowDefinitions>
+
+                <RowDefinition Height="0.317*" />
+                <RowDefinition Height="0.334*" />
+                <RowDefinition Height="0.349*" />
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="121" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Foreground="#FF1C53DC"
+                       Text="Script Engine Path:"
+                       TextWrapping="Wrap"
+                       d:LayoutOverrides="Width" />
+            <TextBlock Grid.Column="1"
+                       Margin="0"
+                       Foreground="#FF1C53DC"
+                       MouseLeftButtonDown="HomeDir_MouseLeftButtonDown"
+                       Style="{DynamicResource LinkTextBlockStyle}"
+                       Text="{Binding HomeDir}"
+                       TextWrapping="Wrap"
+                       d:LayoutOverrides="Width" />
+
+            <TextBlock Grid.Row="1"
+                       Grid.RowSpan="2"
+                       Grid.Column="0"
+                       Margin="0"
+                       Foreground="#FF1C53DC"
+                       Text="Script Engine Version:"
+                       d:LayoutOverrides="Width" />
+            <TextBlock Grid.Row="1"
+                       Grid.RowSpan="2"
+                       Grid.Column="1"
+                       Foreground="#FF1C53DC"
+                       Text="{Binding Version}"
+                       TextWrapping="Wrap"
+                       d:LayoutOverrides="Width" />
+
+            <TextBlock Grid.Row="2"
+                       Grid.RowSpan="2"
+                       Grid.Column="0"
+                       Margin="0"
+                       Foreground="#FF1C53DC"
+                       Text="VS Extension Version:"
+                       d:LayoutOverrides="Width" />
+            <TextBlock Grid.Row="2"
+                       Grid.RowSpan="2"
+                       Grid.Column="1"
+                       Foreground="#FF1C53DC"
+                       Text="{Binding VSXVersion}"
+                       TextWrapping="Wrap"
+                       d:LayoutOverrides="Width" />
+
+            <Image Grid.RowSpan="2"
+                   Grid.Column="1"
+                   Width="20"
+                   Margin="0,0,5,0"
+                   HorizontalAlignment="Right"
+                   Source="Resources/busy.png"
+                   Stretch="UniformToFill"
+                   Visibility="{Binding Path=Busy,
+                                        Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        </Grid>
+        <!--
+            <DockPanel>
+            <Grid DockPanel.Dock="Top">
+            <TextBlock Text="CS-SCript"/>
+            </Grid>
+            <ListBox x:Name="RecentFilesList" MinWidth="200" ItemsSource="{Binding RecentFiles}">
+            <ListBox.ItemTemplate>
+            <DataTemplate>
+            <StackPanel Orientation="Horizontal" >
+            <TextBlock Margin="3,0,0,0" Text="{Binding Path=.}" TextWrapping="Wrap" d:LayoutOverrides="Width, Height" VerticalAlignment="Center" MouseDown="TextBlock_MouseDown"/>
+            </StackPanel>
+            </DataTemplate>
+            </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Right">
+            <Button Content="Open" Width="80" Height="30" Name="button1" Click="button1_Click" />
+            <Button Content="Refresh" Width="80" Height="30" Name="refreshBtn" Click="refreshBtn_Click" />
+            </StackPanel>
+            </DockPanel>
+        -->
+        <Grid Grid.RowSpan="99"
+              Grid.ColumnSpan="99"
+              Visibility="{Binding CompatibleCSSNotFound,
+                                   Converter={StaticResource BooleanToVisibilityConverter}}"
+              d:IsHidden="True">
+            <Rectangle Fill="AliceBlue" Opacity="0.4" />
+            <StackPanel>
+
+                <TextBlock Margin="20,0,20,40"
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           FontStyle="Italic"
+                           Foreground="Red"
+                           Text="{Binding IncompatibilityErrorMessage}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+
+                <Border HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="LightGray"
+                        BorderThickness="1"
+                        CornerRadius="5">
+
+                    <TextBlock Margin="20"
+                               FontSize="24"
+                               MouseLeftButtonDown="DownloadCss_MouseLeftButtonDown"
+                               Style="{DynamicResource LinkTextBlockStyle2}"
+                               Text=" Download CS-Script "
+                               TextAlignment="Center"
+                               ToolTip="Download the latest CS-Script release" />
+                </Border>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</UserControl>
