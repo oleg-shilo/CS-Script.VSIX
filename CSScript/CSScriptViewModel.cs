@@ -238,6 +238,18 @@ namespace OlegShilo.CSScript
             return EngineAssembly.FullName.Substring(pos + "Version=".Length).Split(",".ToCharArray())[0];
         }
 
+        static string FindDebugLauncher()
+        {
+            if (File.Exists(Environment.ExpandEnvironmentVariables(@"%CSSCRIPT_DIR%\Lib\debugVS15.0.cs")))
+                return "debugVS15.0.cs";
+            if (File.Exists(Environment.ExpandEnvironmentVariables(@"%CSSCRIPT_DIR%\Lib\debugVS14.0.cs")))
+                return "debugVS14.0.cs";
+            if (File.Exists(Environment.ExpandEnvironmentVariables(@"%CSSCRIPT_DIR%\Lib\debugVS13.0.cs")))
+                return "debugVS13.0.cs";
+            else 
+                return null;
+        }
+
         internal static string GenerateScriptVSSolution(string scriptFile)
         {
             string cssDir = Environment.GetEnvironmentVariable("CSSCRIPT_DIR");
@@ -245,7 +257,11 @@ namespace OlegShilo.CSScript
             if (cssDir == null)
                 throw new Exception("CS-Script is not installed");
 
-            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/dbg /nl debugVS12.0.cs /noide \"" + scriptFile + "\"");
+            var debug_launcher = FindDebugLauncher();
+            if (debug_launcher == null)
+                throw new Exception("CS-Script cannot find appropriate debug launcher. Ensure you installed the latest version of CS-Script.");
+
+            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/dbg /nl "+ debug_launcher + " /noide \"" + scriptFile + "\"");
 
             if (output.StartsWith("Solution File:"))
             {
@@ -264,7 +280,11 @@ namespace OlegShilo.CSScript
             if (cssDir == null)
                 throw new Exception("CS-Script is not installed");
 
-            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/nl /dbg debugVS12.0.cs /print \"" + scriptFile + "\"");
+            var debug_launcher = FindDebugLauncher();
+            if (debug_launcher == null)
+                throw new Exception("CS-Script cannot find appropriate debug launcher. Ensure you installed the latest version of CS-Script.");
+
+            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/nl /dbg "+ debug_launcher + " /print \"" + scriptFile + "\"");
 
             var retval = new Dictionary<string, List<string>>
                 {
