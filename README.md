@@ -20,7 +20,7 @@ _CS-Script Tools extension allows managing C# scripts with Visual Studio 2017._
 
   Click "New Script" command:
 
-  ![](Images/create_script.png)
+  ![](images/create_script.png)
   <br/>
 
 
@@ -29,14 +29,14 @@ _CS-Script Tools extension allows managing C# scripts with Visual Studio 2017._
   - With Open File dialog
 
     1. Click "Open Script" command:
-       ![](Images/open_script.png)
+       ![](images/open_script.png)
     2. The Open File dialog will popup. Navigate and select the script file. The script file will be loaded into Visual Studio.
     <br/>
 
   - By Drag-n-drop
 
     1. Drag and drop the script file anywhere in the CS-Script Tools window.
-       ![](Images/drag_n_drop.png)
+       ![](images/drag_n_drop.png)
     2. The script file will be loaded into Visual Studio.
     <br/>
 
@@ -46,11 +46,11 @@ _CS-Script Tools extension allows managing C# scripts with Visual Studio 2017._
 
   1. Create a new script with the "New Script" command.
   2. Insert //css_include and  //css_reference directives at the top of the script:
-   ![](Images/vsx_refresh1.png)
+   ![](images/vsx_refresh1.png)
   3. Click on "Refresh Script Project" command:
-   ![](Images/refresh_script.png)
+   ![](images/refresh_script.png)
   4. The script project will be updated with one new source file and new referenced assembly:
-   ![](Images/vsx_refresh2.png)
+   ![](images/vsx_refresh2.png)
     <br/>
 
 * _**Opening script from the Recent Scripts list**_
@@ -59,12 +59,12 @@ _CS-Script Tools extension allows managing C# scripts with Visual Studio 2017._
 
   You can edit "Recent Scripts" content by executing "Manage Recent Scripts" command:
 
-  ![](Images/vsx_recent1.png)
+  ![](images/vsx_recent1.png)
 
   Click the script item in the "Recent Scripts" list to open it in Visual Studio.
-  ![](Images/vsx_recent.png)
+  ![](images/vsx_recent.png)
   <br/>
 
 * _**Executing CS-Script commands**_
   Click any of link button in the commands pane. The buttons have self explanatory captions:
-  ![](Images/vsx_commands.png)
+  ![](images/vsx_commands.png)
