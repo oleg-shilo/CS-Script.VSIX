@@ -63,6 +63,7 @@ namespace OlegShilo.CSScript
         }
 
         static int lastDebgProcessId = 0;
+
         public void OnDebuggerAttached(EnvDTE.dbgEventReason Reason, ref EnvDTE.dbgExecutionAction ExecutionAction)
         {
             if (Reason == EnvDTE.dbgEventReason.dbgEventReasonBreakpoint)
@@ -139,10 +140,17 @@ namespace OlegShilo.CSScript
 
                     this.ExecuteInGUIThread(() =>
                         {
-                            RecentScripts.Clear();
+                            try
+                            {
+                                RecentScripts.Clear();
 
-                            foreach (RecentScript script in RecentFilesHelper.Instance.GetRecentFiles())
-                                RecentScripts.Add(script);
+                                foreach (RecentScript script in RecentFilesHelper.Instance.GetRecentFiles())
+                                    RecentScripts.Add(script);
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                         });
                 }
                 catch (Exception e)
@@ -246,7 +254,7 @@ namespace OlegShilo.CSScript
                 return "debugVS14.0.cs";
             if (File.Exists(Environment.ExpandEnvironmentVariables(@"%CSSCRIPT_DIR%\Lib\debugVS13.0.cs")))
                 return "debugVS13.0.cs";
-            else 
+            else
                 return null;
         }
 
@@ -261,7 +269,7 @@ namespace OlegShilo.CSScript
             if (debug_launcher == null)
                 throw new Exception("CS-Script cannot find appropriate debug launcher. Ensure you installed the latest version of CS-Script.");
 
-            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/dbg /nl "+ debug_launcher + " /noide \"" + scriptFile + "\"");
+            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/dbg /nl " + debug_launcher + " /noide \"" + scriptFile + "\"");
 
             if (output.StartsWith("Solution File:"))
             {
@@ -284,7 +292,7 @@ namespace OlegShilo.CSScript
             if (debug_launcher == null)
                 throw new Exception("CS-Script cannot find appropriate debug launcher. Ensure you installed the latest version of CS-Script.");
 
-            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/nl /dbg "+ debug_launcher + " /print \"" + scriptFile + "\"");
+            string output = Utils.RunApp(Path.Combine(cssDir, "cscs.exe"), "/nl /dbg " + debug_launcher + " /print \"" + scriptFile + "\"");
 
             var retval = new Dictionary<string, List<string>>
                 {
