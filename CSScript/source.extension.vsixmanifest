@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CS-Script.2017.7660d863-76ee-4d81-afab-a6510429a0fd" Version="1.6.3" Language="en-US" Publisher="Oleg Shilo" />
+        <Identity Id="CS-Script.2017.7660d863-76ee-4d81-afab-a6510429a0fd" Version="1.6.4" Language="en-US" Publisher="Oleg Shilo" />
         <DisplayName>CS-Script Tools</DisplayName>
         <Description xml:space="preserve">CS-Script tools for VS2017-19</Description>
         <MoreInfo>http://visualstudiogallery.msdn.microsoft.com/7ca14f55-1b6e-4390-bfa0-7eda7b1bb1a7</MoreInfo>

@@ -6,8 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Windows;
 using Microsoft.Win32;
 
@@ -52,7 +52,6 @@ namespace OlegShilo.CSScript
 
             if (!CompatibleCSSNotFound)
             {
-                RecentScripts = new ObservableCollection<RecentScript>();
                 RecentFilesHelper.Instance.RecentFilesChanged += OnRecentFilesChanged;
             }
         }
@@ -149,7 +148,7 @@ namespace OlegShilo.CSScript
                             }
                             catch (Exception)
                             {
-                                throw;
+                                // throw;
                             }
                         });
                 }
@@ -163,8 +162,7 @@ namespace OlegShilo.CSScript
             }
         }
 
-        public ObservableCollection<RecentScript> RecentScripts { get; set; }
-
+        public ObservableCollection<RecentScript> RecentScripts { get; set; } = new ObservableCollection<RecentScript>();
         public string Version { get; set; }
 
         public string VSXVersion { get; set; }
