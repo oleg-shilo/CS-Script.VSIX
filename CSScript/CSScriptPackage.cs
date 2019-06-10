@@ -102,7 +102,6 @@ namespace OlegShilo.CSScript
             debuggerEvents.OnEnterBreakMode += DebuggerEvents_OnEnterBreakMode;
 
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
-            base.Initialize();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
