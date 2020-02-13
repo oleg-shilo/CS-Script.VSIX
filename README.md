@@ -3,6 +3,11 @@
 Visual Studio 2017 CS-Script Tools extension
 _CS-Script Tools extension allows managing C# scripts with Visual Studio 2017._
 
+## CS-Script resources:
+- Summary: https://www.cs-script.net/  
+- Installation: https://chocolatey.org/packages/cs-script
+- GitHub: https://github.com/oleg-shilo/cs-script
+
 ## CS-Script Tools Tutorial
 
 * _**Installing CS-Script Tools**_
